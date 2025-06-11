@@ -1,7 +1,7 @@
 import React from 'react';
 
 type Props = {
-  children?: React.ReactElement | string | null;
+  children?: React.ReactNode;
   words?: string[] | string | RegExp | RegExp[];
   highlightStyle?: React.CSSProperties;
   caseSensitive?: boolean;
@@ -16,13 +16,13 @@ const TextHighlighter = ({
   caseSensitive = false,
   isEscapePattern = true,
   isWordBoundary = true,
-}: Props) => {
+}: Props): React.ReactNode => {
   // Convert words to array if it's a string
   const wordsArray = Array.isArray(words) ? words : [words];
 
   // If no words to highlight, return original content
   if (!wordsArray.length || wordsArray.every(word => !word)) {
-    return children;
+    return children
   }
 
   // Function to escape regex special characters
@@ -55,7 +55,7 @@ const TextHighlighter = ({
   const regex = new RegExp(`(${pattern})`, caseSensitive ? 'g' : 'gi');
 
   // Function to highlight text content
-  const highlightText = (textContent: string): unknown => {
+  const highlightText = (textContent: string) => {
     if (!textContent || typeof textContent !== 'string') {
       return textContent;
     }
@@ -83,7 +83,7 @@ const TextHighlighter = ({
   };
 
   // Function to recursively process React elements
-  const processElement = (element: unknown): unknown => {
+  const processElement = (element: any): any => {
     if (typeof element === 'string') {
       return highlightText(element);
     }

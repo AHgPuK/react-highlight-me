@@ -1,13 +1,13 @@
 {
   "name": "react-highlight-me",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Highlight words in React components or text",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "exports": {
     ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
   "files": [
