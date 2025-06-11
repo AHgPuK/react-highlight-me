@@ -1,5 +1,5 @@
 // import TextHighlighter from 'react-highlight-me';
-import TextHighlighter from '../../highlight.js';
+import TextHighlighter from '../../dist/esm/index';
 
 // Demo component
 const Demo = () => {

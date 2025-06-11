@@ -1,13 +1,32 @@
 {
   "name": "react-highlight-me",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Highlight words in React components or text",
-  "main": "highlight.tsx",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [],
   "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com",
   "license": "ISC",
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.9.0",
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "typescript": "^5.3.3"
+  }
 }

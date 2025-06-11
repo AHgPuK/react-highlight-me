@@ -1,7 +1,7 @@
 import React from 'react';
 
 type Props = {
-  children?: React.ReactElement | null | string;
+  children?: React.ReactElement | string | null;
   words?: string[] | string | RegExp | RegExp[];
   highlightStyle?: React.CSSProperties;
   caseSensitive?: boolean;
@@ -9,9 +9,9 @@ type Props = {
   isWordBoundary?: boolean;
 }
 
-const TextHighlighter = ({ 
+const TextHighlighter = ({
   children = '',
-  words = [], 
+  words = [],
   highlightStyle = { backgroundColor: 'yellow', fontWeight: 'bold' },
   caseSensitive = false,
   isEscapePattern = true,
@@ -19,7 +19,7 @@ const TextHighlighter = ({
 }: Props) => {
   // Convert words to array if it's a string
   const wordsArray = Array.isArray(words) ? words : [words];
-  
+
   // If no words to highlight, return original content
   if (!wordsArray.length || wordsArray.every(word => !word)) {
     return children;
@@ -44,10 +44,10 @@ const TextHighlighter = ({
 
   // Create a regex pattern for all words
   const pattern = wordsArray
-    .filter(word => word)
-    .map(word => escapeRegex(word))
-    .join('|');
-  
+  .filter(word => word)
+  .map(word => escapeRegex(word))
+  .join('|');
+
   if (!pattern) {
     return children;
   }
@@ -55,7 +55,7 @@ const TextHighlighter = ({
   const regex = new RegExp(`(${pattern})`, caseSensitive ? 'g' : 'gi');
 
   // Function to highlight text content
-  const highlightText = (textContent) => {
+  const highlightText = (textContent: string): unknown => {
     if (!textContent || typeof textContent !== 'string') {
       return textContent;
     }
@@ -83,11 +83,11 @@ const TextHighlighter = ({
   };
 
   // Function to recursively process React elements
-  const processElement = (element) => {
+  const processElement = (element: unknown): unknown => {
     if (typeof element === 'string') {
       return highlightText(element);
     }
-    
+
     if (typeof element === 'number') {
       return element;
     }
@@ -97,14 +97,14 @@ const TextHighlighter = ({
     }
 
     // Clone element and process its children
-    const processedChildren = React.Children.map(element.props.children, (child) => {
+    const processedChildren = React.Children.map((element.props as React.PropsWithChildren).children, (child) => {
       if (typeof child === 'string') {
         return highlightText(child);
       }
       return processElement(child);
     });
 
-    return React.cloneElement(element, {}, processedChildren);
+    return React.cloneElement(element, {}, processedChildren as React.ReactElement[] | string | number);
   };
 
   return processElement(children);
