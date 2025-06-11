@@ -2,9 +2,11 @@ import React from 'react';
 
 type Props = {
   children?: React.ReactElement | null;
-  words?: string[] | string;
+  words?: string[] | string | RegExp | RegExp[];
   highlightStyle?: React.CSSProperties;
   caseSensitive?: boolean;
+  isEscapePattern?: boolean;
+  isWordBoundary?: boolean;
 }
 
 const TextHighlighter = ({ 
@@ -12,7 +14,9 @@ const TextHighlighter = ({
   words = [], 
   highlightStyle = { backgroundColor: 'yellow', fontWeight: 'bold' },
   caseSensitive = false,
-}) => {
+  isEscapePattern = true,
+  isWordBoundary = true,
+}: Props) => {
   // Convert words to array if it's a string
   const wordsArray = Array.isArray(words) ? words : [words];
   
@@ -22,14 +26,26 @@ const TextHighlighter = ({
   }
 
   // Function to escape regex special characters
-  const escapeRegex = (string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapeRegex = (term: string | RegExp) => {
+    if (term instanceof RegExp) {
+      return term.source
+    }
+
+    if (isEscapePattern) {
+      term = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    if (isWordBoundary) {
+      term = `\\b${term}\\b`;
+    }
+
+    return term
   };
 
   // Create a regex pattern for all words
   const pattern = wordsArray
-    .filter(word => word && word.trim())
-    .map(word => escapeRegex(word.trim()))
+    .filter(word => word)
+    .map(word => escapeRegex(word))
     .join('|');
   
   if (!pattern) {
@@ -45,13 +61,16 @@ const TextHighlighter = ({
     }
 
     const parts = textContent.split(regex);
-    
+
     return parts.map((part, index) => {
-      const shouldHighlight = wordsArray.some(word => 
-        caseSensitive 
+      const shouldHighlight = wordsArray.some(word => {
+        if (word instanceof RegExp) {
+          return word.test(part);
+        }
+        return caseSensitive
           ? part === word.trim()
-          : part.toLowerCase() === word.trim().toLowerCase()
-      );
+          : part.toLowerCase() === word.trim().toLowerCase();
+      });
 
       return shouldHighlight ? (
         <mark key={index} style={highlightStyle}>

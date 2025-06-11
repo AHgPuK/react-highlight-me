@@ -5,7 +5,7 @@ A flexible React component for highlighting specific words or phrases within tex
 ## Features
 
 - 🎯 **Flexible Input**: Works with both plain text and React components
-- 🔍 **Multiple Words**: Highlight single words or arrays of words
+- 🔍 **Multiple Words**: Highlight single words, arrays of words, regex patterns, or arrays of regex patterns
 - 🎨 **Custom Styling**: Fully customizable highlight styles
 - 📝 **Case Sensitivity**: Optional case-sensitive or case-insensitive matching
 - 🔧 **TypeScript Support**: Written in TypeScript with proper type definitions
@@ -122,12 +122,14 @@ function App() {
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `React.ReactElement \| null` | `''` | The content to process for highlighting |
-| `words` | `string[] \| string` | `[]` | Word or array of words to highlight |
-| `highlightStyle` | `React.CSSProperties` | `{ backgroundColor: 'yellow', fontWeight: 'bold' }` | CSS styles to apply to highlighted text |
-| `caseSensitive` | `boolean` | `false` | Whether to perform case-sensitive matching |
+| Prop              | Type                                       | Default                                             | Description                                |
+|-------------------|--------------------------------------------|-----------------------------------------------------|--------------------------------------------|
+| `children`        | `React.ReactElement \| null`               | `''`                                                | The content to process for highlighting    |
+| `words`           | `string[] \| string \| RegExp \| RegExp[]` | `[]`                                                | Word or array of words to highlight        |
+| `highlightStyle`  | `React.CSSProperties`                      | `{ backgroundColor: 'yellow', fontWeight: 'bold' }` | CSS styles to apply to highlighted text    |
+| `caseSensitive`   | `boolean`                                  | `false`                                             | Whether to perform case-sensitive matching |
+| `isEscapePattern` | `boolean`                                  | `true`                                              | Mask regexp chars in words                 |
+| `isWordBoundary`  | `boolean`                                  | `true`                                              | Match words only at word boundaries        |
 
 ## Examples
 

@@ -1,4 +1,5 @@
-import TextHighlighter from 'react-highlight-me';
+// import TextHighlighter from 'react-highlight-me';
+import TextHighlighter from '../../highlight.js';
 
 // Demo component
 const Demo = () => {
@@ -31,10 +32,10 @@ const Demo = () => {
           
           <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Highlighted (single word):</p>
           <TextHighlighter 
-            words="React"
-            highlightStyle={{ backgroundColor: '#fef3c7', padding: '2px 4px', borderRadius: '3px' }}
+            words={'React'}
+            highlightStyle={{ backgroundColor: '#fef3c7', padding: '2px 4px', borderRadius: '3px', color: 'red' }}
           >
-            {sampleText}
+            {'react React ReactReact'}
           </TextHighlighter>
         </div>
       </div>
