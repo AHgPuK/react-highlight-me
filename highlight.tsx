@@ -1,7 +1,7 @@
 import React from 'react';
 
 type Props = {
-  children?: React.ReactElement | null;
+  children?: React.ReactElement | null | string;
   words?: string[] | string | RegExp | RegExp[];
   highlightStyle?: React.CSSProperties;
   caseSensitive?: boolean;
