@@ -1,4 +1,4 @@
-import TextHighlighter from './text-highlighter';
+import TextHighlighter from 'react-highlight-me';
 
 // Demo component
 const Demo = () => {

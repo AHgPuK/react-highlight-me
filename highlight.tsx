@@ -11,7 +11,7 @@ const TextHighlighter = ({
   children = '',
   words = [], 
   highlightStyle = { backgroundColor: 'yellow', fontWeight: 'bold' },
-  caseSensitive = false 
+  caseSensitive = false,
 }) => {
   // Convert words to array if it's a string
   const wordsArray = Array.isArray(words) ? words : [words];
