@@ -1,6 +1,13 @@
 // import TextHighlighter from 'react-highlight-me';
 import TextHighlighter from '../../dist/esm/index';
 
+const CustomComponent = ({ text }) => (
+  <div style={{ padding: '8px', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+    {text}
+  </div>
+);
+
+
 // Demo component
 const Demo = () => {
   const sampleText = "This is a sample text with React and JavaScript words to highlight.";
@@ -20,6 +27,18 @@ const Demo = () => {
       <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#1f2937', marginBottom: '24px' }}>
         Text Highlighter Component
       </h1>
+
+      <p style={{ fontSize: '16px', color: '#4b5563', marginBottom: '24px' }}>
+        This component allows you to highlight specific words or phrases in text or React components.
+        You can customize the highlight styles and use it with both plain text and React components.
+      </p>
+      <TextHighlighter
+        words={['React', 'JavaScript']}
+        highlightStyle={{ backgroundColor: '#fef3c7', padding: '2px 4px', borderRadius: '3px' }}
+      >
+        <CustomComponent text={'JavaScript React and more and more'}>
+        </CustomComponent>
+      </TextHighlighter>
       
       {/* Basic text highlighting */}
       <div style={{ marginBottom: '32px' }}>
@@ -32,10 +51,14 @@ const Demo = () => {
           
           <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Highlighted (single word):</p>
           <TextHighlighter 
-            words={'React'}
+            words={['React', 'Javascript']}
             highlightStyle={{ backgroundColor: '#fef3c7', padding: '2px 4px', borderRadius: '3px', color: 'red' }}
           >
-            {'react React ReactReact'}
+            <ul>
+              <li>First item with React</li>
+              <li>Second item with JavaScript</li>
+              <li>react ReactReact</li>
+            </ul>
           </TextHighlighter>
         </div>
       </div>
