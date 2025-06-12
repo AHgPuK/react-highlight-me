@@ -1,12 +1,16 @@
 import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
 
 import TextHighlighter from '../../src/index';
+import AdvancedTypeScript from './components/AdvancedTypeScript';
+import DynamicContent from './components/DynamicContent';
+import News from './components/News';
 
 import SearchNavigator from './components/SearchNavigator';
 import BlogPost from './components/BlogPost';
 import CodeExample from './components/CodeExample';
 import NewsCard from './components/NewsCard';
 import InteractiveDemo from './components/InteractiveDemo';
+import RegexPattern from './components/RegexPattern';
 
 
 // Main Demo Component
@@ -359,108 +363,12 @@ const Demo = () => {
               isDebug={isDebug}
             >
               <BlogPost/>
-
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '16px',
-                marginBottom: '16px'
-              }}>
-                <NewsCard
-                  title="React 18.3 Released with Performance Improvements"
-                  content="The latest React version includes automatic batching, concurrent features, and improved TypeScript support. Developers can now use Suspense for data fetching more effectively."
-                  date="December 15, 2024"
-                />
-                <NewsCard
-                  title="JavaScript Runtime Benchmarks 2024"
-                  content="Node.js 21 shows significant performance gains over previous versions. Bun and Deno continue to challenge traditional JavaScript runtimes with innovative approaches."
-                  date="December 12, 2024"
-                />
-              </div>
-
+              <News/>
               <CodeExample/>
-
               <InteractiveDemo/>
-
-              <div style={{
-                background: 'linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
-                padding: '20px',
-                borderRadius: '12px',
-                marginBottom: '16px'
-              }}>
-                <h3 style={{ color: '#2d3748', marginBottom: '12px' }}>🔍 RegEx Pattern Examples</h3>
-                <div style={{ color: '#4a5568', lineHeight: '1.6' }}>
-                  <p>Test these patterns: Email addresses like user@example.com, phone numbers like 555-123-4567,
-                    dates like 2024-12-15, URLs like https://example.com, and various numbers like 42, 3.14159, or
-                    100%.</p>
-                  <p>JavaScript variables: const myVariable = 'value'; let counter = 0; var oldStyle = true;</p>
-                  <p>CSS properties: background-color: #ff6b6b; margin: 10px; padding: 5px 10px;</p>
-                </div>
-              </div>
-
-              <div style={{
-                background: 'white',
-                border: '2px dashed #e2e8f0',
-                padding: '20px',
-                borderRadius: '8px',
-                textAlign: 'center',
-                marginBottom: '16px'
-              }}>
-                <h4 style={{ color: '#718096', marginBottom: '8px' }}>Dynamic Content Area</h4>
-                <p style={{ color: '#a0aec0', fontSize: '14px' }}>
-                  Type new words above to see real-time highlighting. Try regex patterns like /\d+/ for numbers,
-                  /[A-Z]&#123;2,&#125;/ for uppercase sequences, or /\b\w&#123;8,&#125;\b/ for long words.
-                </p>
-                <div style={{
-                  background: '#f7fafc',
-                  padding: '12px',
-                  borderRadius: '6px',
-                  marginTop: '12px',
-                  fontSize: '13px',
-                  color: '#4a5568'
-                }}>
-                  <strong>Quick Test:</strong> React components use TypeScript for type safety.
-                  The useState hook manages state in functional components. Error handling
-                  prevents bugs and improves user experience. Success metrics help measure
-                  application performance and user satisfaction.
-                </div>
-              </div>
-
-              <div style={{
-                background: '#2d3748',
-                color: '#e2e8f0',
-                padding: '20px',
-                borderRadius: '8px',
-                fontFamily: 'Monaco, Consolas, monospace',
-                fontSize: '13px'
-              }}>
-                <div style={{ color: '#68d391', marginBottom: '12px' }}>// Advanced TypeScript Example</div>
-                <div style={{ lineHeight: '1.5' }}>
-                  <div><span style={{ color: '#f687b3' }}>interface</span> <span
-                    style={{ color: '#90cdf4' }}>User</span> {'{'}</div>
-                  <div style={{ marginLeft: '16px' }}>id: <span style={{ color: '#fbb6ce' }}>number</span>;</div>
-                  <div style={{ marginLeft: '16px' }}>name: <span style={{ color: '#fbb6ce' }}>string</span>;</div>
-                  <div style={{ marginLeft: '16px' }}>email: <span style={{ color: '#fbb6ce' }}>string</span>;</div>
-                  <div style={{ marginLeft: '16px' }}>isActive: <span style={{ color: '#fbb6ce' }}>boolean</span>;</div>
-                  <div>{'}'}</div>
-                  <br/>
-                  <div><span style={{ color: '#f687b3' }}>const</span> <span style={{ color: '#90cdf4' }}>users</span>:
-                    User[] = [
-                  </div>
-                  <div
-                    style={{ marginLeft: '16px' }}>{'{ id: 1, name: "Alice", email: "alice@example.com", isActive: true },'}</div>
-                  <div
-                    style={{ marginLeft: '16px' }}>{'{ id: 2, name: "Bob", email: "bob@test.org", isActive: false },'}</div>
-                  <div>];</div>
-                  <br/>
-                  <div><span style={{ color: '#f687b3' }}>function</span> <span
-                    style={{ color: '#90cdf4' }}>findActiveUsers</span>(users: User[]): User[] {'{'}</div>
-                  <div style={{ marginLeft: '16px' }}><span style={{ color: '#f687b3' }}>return</span> users.<span
-                    style={{ color: '#90cdf4' }}>filter</span>(user =&gt; user.isActive);
-                  </div>
-                  <div>{'}'}</div>
-                </div>
-              </div>
+              <RegexPattern/>
+              <DynamicContent/>
+              <AdvancedTypeScript/>
             </TextHighlighter>
           </div>
 
