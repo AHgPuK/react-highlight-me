@@ -6,59 +6,83 @@ type Props = {
   highlightStyle?: React.CSSProperties;
   caseSensitive?: boolean;
   isWordBoundary?: boolean;
+  isDebug?: boolean;
 }
-
+// Alternative approach: Use a single observer that never disconnects
 const TextHighlighter = ({
   children,
   words = [],
   highlightStyle = { backgroundColor: 'yellow', fontWeight: 'bold' },
   caseSensitive = false,
   isWordBoundary = true,
+  isDebug = false,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<MutationObserver | null>(null);
-  const isHighlightingRef = useRef(false);
+  const lastHighlightSignature = useRef<string>('');
   const [isInitiallyReady, setIsInitiallyReady] = useState(false);
 
-  // Memoize the highlighting function to prevent unnecessary re-renders
-  const highlightTextInElement = useCallback((element: HTMLElement) => {
-    const wordsArray = Array.isArray(words) ? words : [words];
-    if (!wordsArray.length || wordsArray.every(word => !word)) return;
+  const propsRef = useRef({ words, highlightStyle, caseSensitive, isWordBoundary });
+  propsRef.current = { words, highlightStyle, caseSensitive, isWordBoundary };
 
-    // Prevent infinite loops
-    if (isHighlightingRef.current) return;
-    isHighlightingRef.current = true;
+  const getTextSignature = useCallback((element: HTMLElement): string => {
+    // Create a signature of all text content to detect real changes
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
 
-    // Temporarily disconnect observer during highlighting
-    if (observerRef.current) {
-      observerRef.current.disconnect();
+    const textParts: string[] = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      if (!(node as Text).parentElement?.hasAttribute('data-highlighter')) {
+        textParts.push((node as Text).textContent || '');
+      }
     }
 
-    try {
-      // Get all text nodes
-      const walker = document.createTreeWalker(
-        element,
-        NodeFilter.SHOW_TEXT,
-        null
-      );
+    return textParts.join('|');
+  }, []);
 
-      const textNodes: Text[] = [];
-      let node;
-      while ((node = walker.nextNode())) {
-        // Skip nodes that are already inside <mark> tags
-        const parentMark = (node as Text).parentElement?.closest('mark');
-        if (!parentMark) {
-          textNodes.push(node as Text);
-        }
-      }
+  const highlightTextInElement = useCallback((element: HTMLElement) => {
+    const { words, highlightStyle, caseSensitive, isWordBoundary } = propsRef.current;
+    const wordsArray = Array.isArray(words) ? words : [words];
 
-      // Process each text node
-      textNodes.forEach(textNode => {
-        const text = textNode.textContent || '';
-        if (!text.trim()) return;
+    isDebug && console.log('Highlighting with words:', wordsArray);
 
-        // Create regex pattern - handle mixed string/RegExp array
-        const pattern = wordsArray
+    // Remove existing highlights
+    const existingMarks = element.querySelectorAll('mark[data-highlighter="true"]');
+    existingMarks.forEach(mark => {
+      const textContent = mark.textContent || '';
+      const textNode = document.createTextNode(textContent);
+      mark.parentNode?.replaceChild(textNode, mark);
+    });
+
+    element.normalize(); // Ensure text nodes are merged
+
+    if (!wordsArray.length || wordsArray.every(word => !word)) {
+      lastHighlightSignature.current = getTextSignature(element);
+      return;
+    }
+
+    // Apply highlighting (same logic as before)
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    const textNodes: Text[] = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      textNodes.push(node as Text);
+    }
+
+    textNodes.forEach(textNode => {
+      const text = textNode.textContent || '';
+      if (!text.trim()) return;
+
+      const pattern = wordsArray
         .filter(word => word)
         .map(word => {
           if (word instanceof RegExp) {
@@ -72,92 +96,68 @@ const TextHighlighter = ({
         })
         .join('|');
 
-        if (!pattern) return;
+      if (!pattern) return;
 
-        const regex = new RegExp(`(${pattern})`, caseSensitive ? 'g' : 'gi');
-        const parts = text.split(regex);
+      const regex = new RegExp(`(${pattern})`, caseSensitive ? 'g' : 'gi');
+      const parts = text.split(regex);
 
-        if (parts.length > 1) {
-          const fragment = document.createDocumentFragment();
+      if (parts.length > 1) {
+        const fragment = document.createDocumentFragment();
 
-          parts.forEach(part => {
-            if (!part) return;
+        parts.forEach(part => {
+          if (!part) return;
 
-            const shouldHighlight = wordsArray.some(word => {
-              if (word instanceof RegExp) {
-                const testRegex = new RegExp(word.source, caseSensitive ? word.flags : word.flags + 'i');
-                return testRegex.test(part);
-              }
-              return caseSensitive
-                ? part === word.trim()
-                : part.toLowerCase() === word.trim().toLowerCase();
-            });
-
-            if (shouldHighlight) {
-              const mark = document.createElement('mark');
-              Object.assign(mark.style, highlightStyle);
-              mark.textContent = part;
-              fragment.appendChild(mark);
-            } else {
-              fragment.appendChild(document.createTextNode(part));
+          const shouldHighlight = wordsArray.some(word => {
+            if (word instanceof RegExp) {
+              const testRegex = new RegExp(word.source, caseSensitive ? word.flags : word.flags + 'i');
+              return testRegex.test(part);
             }
+            return caseSensitive
+              ? part === word.trim()
+              : part.toLowerCase() === word.trim().toLowerCase();
           });
 
-          textNode.parentNode?.replaceChild(fragment, textNode);
-        }
-      });
-    } finally {
-      isHighlightingRef.current = false;
-
-      // Reconnect observer after highlighting
-      if (observerRef.current && containerRef.current) {
-        observerRef.current.observe(containerRef.current, {
-          childList: true,
-          subtree: true,
-          characterData: true
+          if (shouldHighlight) {
+            const mark = document.createElement('mark');
+            mark.setAttribute('data-highlighter', 'true');
+            Object.assign(mark.style, highlightStyle);
+            mark.textContent = part;
+            fragment.appendChild(mark);
+          } else {
+            fragment.appendChild(document.createTextNode(part));
+          }
         });
-      }
-    }
-  }, [words, highlightStyle, caseSensitive, isWordBoundary]);
 
-  // Initial highlighting with useLayoutEffect (prevents flicker)
+        textNode.parentNode?.replaceChild(fragment, textNode);
+      }
+    });
+
+    // Update signature after highlighting
+    lastHighlightSignature.current = getTextSignature(element);
+  }, [getTextSignature]);
+
   useLayoutEffect(() => {
     if (!containerRef.current) return;
+
+    isDebug && console.log('Setting up persistent MutationObserver');
 
     highlightTextInElement(containerRef.current);
     setIsInitiallyReady(true);
 
-    // Set up mutation observer for dynamic changes
     observerRef.current = new MutationObserver((mutations) => {
-      // Only process if we're not currently highlighting
-      if (isHighlightingRef.current) return;
+      if (!containerRef.current) return;
 
-      const hasRelevantChanges = mutations.some(mutation => {
-        // Check for text content changes
-        if (mutation.type === 'characterData') return true;
+      // Check if the text signature has actually changed
+      const currentSignature = getTextSignature(containerRef.current);
 
-        // Check for added/removed nodes (but ignore our own <mark> elements)
-        if (mutation.type === 'childList') {
-          const hasNonMarkChanges = Array.from(mutation.addedNodes).some(node =>
-            node.nodeType === Node.TEXT_NODE ||
-            (node.nodeType === Node.ELEMENT_NODE && !(node as Element).matches('mark'))
-          ) || Array.from(mutation.removedNodes).some(node =>
-            node.nodeType === Node.TEXT_NODE ||
-            (node.nodeType === Node.ELEMENT_NODE && !(node as Element).matches('mark'))
-          );
-          return hasNonMarkChanges;
-        }
+      if (currentSignature !== lastHighlightSignature.current) {
+        isDebug && console.log('Text signature changed, re-highlighting');
+        isDebug && console.log('Old:', lastHighlightSignature.current);
+        isDebug && console.log('New:', currentSignature);
 
-        return false;
-      });
-
-      if (hasRelevantChanges && containerRef.current) {
-        // Small delay to batch multiple rapid changes
-        setTimeout(() => {
-          if (containerRef.current && !isHighlightingRef.current) {
-            highlightTextInElement(containerRef.current);
-          }
-        }, 0);
+        highlightTextInElement(containerRef.current);
+      } else {
+        isDebug && console.log('Text signature unchanged, ignoring mutation');
       }
     });
 
@@ -172,7 +172,7 @@ const TextHighlighter = ({
         observerRef.current.disconnect();
       }
     };
-  }, [highlightTextInElement]);
+  }, [words, highlightStyle, caseSensitive, isWordBoundary, highlightTextInElement, getTextSignature]);
 
   return (
     <div
