@@ -34,7 +34,8 @@
   "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AHgPuK/react-highlight-me",
+    "url": "git+https://github.com/AHgPuK/react-highlight-me"
+  },
   "license": "ISC",
   "packageManager": "pnpm@10.9.0",
   "devDependencies": {
