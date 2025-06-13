@@ -14,14 +14,18 @@ A flexible React component for highlighting specific words or phrases within tex
 
 ## Installation
 
-Copy the `TextHighlighter.tsx` component into your project, or install it as a package if published.
+| npm                              | yarn                          | pnpm                          |
+|----------------------------------|-------------------------------|-------------------------------|
+| `npm install react-highlight-me` | `yarn add react-highlight-me` | `pnpm add react-highlight-me` |
+
+
 
 ## Usage
 
 ### Basic Text Highlighting
 
 ```jsx
-import TextHighlighter from './TextHighlighter';
+import TextHighlighter from 'react-highlight-me';
 
 function App() {
   return (
