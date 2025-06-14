@@ -7,12 +7,10 @@
   "exports": {
     ".": {
       "import": {
-        "development": "./src/index.tsx",
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
       },
       "require": {
-        "development": "./src/index.tsx",
         "types": "./dist/cjs/index.d.ts",
         "default": "./dist/cjs/index.js"
       }
