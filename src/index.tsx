@@ -109,7 +109,8 @@ const TextHighlighter = ({
 
           const shouldHighlight = wordsArray.some(word => {
             if (word instanceof RegExp) {
-              const testRegex = new RegExp(word.source, caseSensitive ? word.flags : word.flags + 'i');
+              const flags = caseSensitive ? word.flags : [...new Set([...word.flags.split(''), 'i'])].join('');
+              const testRegex = new RegExp(word.source, flags);
               return testRegex.test(part);
             }
             return caseSensitive
