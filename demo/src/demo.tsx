@@ -8,7 +8,6 @@ import News from './components/News';
 import SearchNavigator from './components/SearchNavigator';
 import BlogPost from './components/BlogPost';
 import CodeExample from './components/CodeExample';
-import NewsCard from './components/NewsCard';
 import InteractiveDemo from './components/InteractiveDemo';
 import RegexPattern from './components/RegexPattern';
 
@@ -24,7 +23,7 @@ const Demo = () => {
     fontWeight: 'bold'
   });
   const [caseSensitive, setCaseSensitive] = useState(false);
-  const [isWordBoundary, setIsWordBoundary] = useState(true);
+  const [isWordBoundary, setIsWordBoundary] = useState(false);
   const [isDebug, setIsDebug] = useState(false);
   const [activePreset, setActivePreset] = useState('default');
 
@@ -147,15 +146,21 @@ const Demo = () => {
           justifyContent: 'center',
           flex: 0,
         }}>
-          <h1 style={{
-            textAlign: 'center',
-            margin: '15px',
-            background: 'linear-gradient(45deg, #667eea, #764ba2)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            fontSize: '2.5rem',
-            fontWeight: 'bold',
-          }}>
+          <h1
+            style={{
+              textAlign: 'center',
+              margin: '15px',
+              background: 'linear-gradient(45deg, #667eea, #764ba2)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontSize: '2.5rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              document.querySelector('#scrollArea')?.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+          >
             ✨ TextHighlighter Demo
           </h1>
 
@@ -171,12 +176,13 @@ const Demo = () => {
                 containerRef={contentRef}
                 searchTerm={inputWords}
                 highlightStyle={highlightStyle}
+                dependencies={[caseSensitive, isWordBoundary]}
               />
             </div>
           </div>
         </div>
 
-        <div style={{
+        <div id={'scrollArea'} style={{
           minHeight: 0,
           height: '100%',
           overflow: 'auto',
@@ -450,7 +456,8 @@ const Demo = () => {
 
       </div>
     </div>
-  );
+  )
+    ;
 };
 
 export default Demo;

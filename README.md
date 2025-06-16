@@ -132,8 +132,7 @@ function App() {
 | `words`           | `string[] \| string \| RegExp \| RegExp[]` | `[]`                                                | Word or array of words to highlight        |
 | `highlightStyle`  | `React.CSSProperties`                      | `{ backgroundColor: 'yellow', fontWeight: 'bold' }` | CSS styles to apply to highlighted text    |
 | `caseSensitive`   | `boolean`                                  | `false`                                             | Whether to perform case-sensitive matching |
-| `isEscapePattern` | `boolean`                                  | `true`                                              | Mask regexp chars in words                 |
-| `isWordBoundary`  | `boolean`                                  | `true`                                              | Match words only at word boundaries        |
+| `isWordBoundary`  | `boolean`                                  | `false`                                             | Match words only at word boundaries        |
 
 ## Examples
 

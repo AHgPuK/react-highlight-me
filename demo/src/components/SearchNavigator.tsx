@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
-const SearchNavigator = ({ containerRef, highlightStyle, searchTerm }) => {
+const SearchNavigator = ({ containerRef, highlightStyle, searchTerm, dependencies = [] }) => {
  const [currentIndex, setCurrentIndex] = useState(0);
  const [matches, setMatches] = useState([]);
 
@@ -15,7 +15,7 @@ const SearchNavigator = ({ containerRef, highlightStyle, searchTerm }) => {
 
    setMatches(foundMatches);
    setCurrentIndex(0);
- }, [containerRef, searchTerm]);
+ }, [containerRef, searchTerm, ...dependencies]);
 
  React.useEffect(() => {
    findMatches();
