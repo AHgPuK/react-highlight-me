@@ -17,7 +17,7 @@ const Demo = () => {
   const [inputWords, setInputWords] = useState('React, JavaScript, TypeScript');
   const [highlightStyle, setHighlightStyle] = useState({
     backgroundColor: '#ffeb3b',
-    color: '#000',
+    color: '#000000',
     padding: '2px 4px',
     borderRadius: '3px',
     fontWeight: 'bold'
@@ -358,10 +358,14 @@ const Demo = () => {
           </div>
 
           {/* Content Area */}
-          <div ref={contentRef} style={{ position: 'relative' }}>
+          <div style={{
+            position: 'relative',
+            padding: '0 24px',
+          }}>
             <h2 style={{ marginBottom: '20px', color: '#495057' }}>📄 Sample Content</h2>
 
             <TextHighlighter
+              ref={contentRef}
               words={words}
               highlightStyle={highlightStyle}
               caseSensitive={caseSensitive}
