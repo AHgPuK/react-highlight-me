@@ -124,6 +124,33 @@ function App() {
 </TextHighlighter>
 ```
 
+### Gettting highlighted words
+
+```jsx
+import TextHighlighter from 'react-highlight-me';
+function App() {
+  const highlightedWords = ['React', 'JavaScript'];
+
+  return (
+    <>
+      <TextHighlighter words={highlightedWords}>
+        <div>
+          React is a JavaScript library for building user interfaces.
+        </div>
+      </TextHighlighter>
+      <div>
+        <h2>Highlighted Words:</h2>
+        <ul>
+          {Array.from(document.querySelectorAll(TextHighlighter.MARKS_IN_SCOPE_SELECTOR)).map((mark, index) => (
+            <li key={index}>{mark.textContent}</li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+}
+```
+
 ## Props
 
 | Prop              | Type                                       | Default                                             | Description                                |
@@ -133,6 +160,7 @@ function App() {
 | `highlightStyle`  | `React.CSSProperties`                      | `{ backgroundColor: 'yellow', fontWeight: 'bold' }` | CSS styles to apply to highlighted text    |
 | `caseSensitive`   | `boolean`                                  | `false`                                             | Whether to perform case-sensitive matching |
 | `isWordBoundary`  | `boolean`                                  | `false`                                             | Match words only at word boundaries        |
+| `escapeRegex`     | `RegExp`                                   | `/[.*+?^${}()\|[\]\\]/g`                            | Escape special regex characters            |
 
 ## Examples
 

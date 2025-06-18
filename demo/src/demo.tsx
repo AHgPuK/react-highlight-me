@@ -14,7 +14,7 @@ import RegexPattern from './components/RegexPattern';
 
 // Main Demo Component
 const Demo = () => {
-  const [inputWords, setInputWords] = useState('React, JavaScript, TypeScript');
+  const [inputWords, setInputWords] = useState('React,JavaScript,TypeScript');
   const [highlightStyle, setHighlightStyle] = useState({
     backgroundColor: '#ffeb3b',
     color: '#000000',
@@ -30,11 +30,11 @@ const Demo = () => {
   const contentRef = useRef(null);
 
   // Parse words from input (handles strings and regex)
-  const parseWords = (input) => {
+  const parseWords = (input: string) => {
     if (!input.trim()) return [];
 
-    return input.split(',').map(word => {
-      const trimmed = word.trim();
+    return input.split(',').map((word: string) => {
+      const trimmed = word;
       // Check if it's a regex pattern
       if (trimmed.startsWith('/') && trimmed.endsWith('/')) {
         try {
@@ -100,7 +100,7 @@ const Demo = () => {
     }
   };
 
-  const applyPreset = (presetName) => {
+  const applyPreset = (presetName: string) => {
     const preset = presets[presetName];
     setHighlightStyle(preset.style);
     setInputWords(preset.words);

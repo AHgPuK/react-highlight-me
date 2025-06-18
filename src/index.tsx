@@ -7,6 +7,7 @@ type Props = {
   caseSensitive?: boolean;
   isWordBoundary?: boolean;
   isDebug?: boolean;
+  escapeRegex?: RegExp;
 }
 
 const ROOT_ELEMENT_ID = 'react-highlight-me';
@@ -16,7 +17,11 @@ const MARK_ATTRIBUTE = 'data-highlighter';
 export const MARK_SELECTOR = `mark[${MARK_ATTRIBUTE}="true"]`;
 export const MARKS_IN_SCOPE_SELECTOR = `:scope ${MARK_SELECTOR}:not(:scope ${ROOT_ELEMENT_SELECTOR} ${MARK_SELECTOR})`;
 
-// Alternative approach: Use a single observer that never disconnects
+interface TextHighlighterComponent extends React.ForwardRefExoticComponent<Props & React.RefAttributes<HTMLDivElement>> {
+  MARKS_IN_SCOPE_SELECTOR: string;
+  MARK_SELECTOR: string;
+  ROOT_ELEMENT_SELECTOR: string;
+}
 
 const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
   children,
@@ -25,23 +30,24 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
   caseSensitive = false,
   isWordBoundary = false,
   isDebug = false,
+  escapeRegex = /[.*+?^${}()|[\]\\]/g,
 }, ref) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
   const observerRef = useRef<MutationObserver | null>(null);
   const lastHighlightSignature = useRef<string>('');
   const [isInitiallyReady, setIsInitiallyReady] = useState(false);
 
-  const propsRef = useRef({ words, highlightStyle, caseSensitive, isWordBoundary });
-  propsRef.current = { words, highlightStyle, caseSensitive, isWordBoundary };
+  const currentProps = { words, highlightStyle, caseSensitive, isWordBoundary, escapeRegex };
+  const propsRef = useRef(currentProps);
+  propsRef.current = currentProps;
 
   const nodeFilter = {
-    // Custom filter to ignore text nodes inside nested data-id elements
-    // This prevents highlighting text inside nested highlighter elements
     acceptNode: (node: Node) => {
-      if (node.parentElement?.hasAttribute(ROOT_ELEMENT_ATTR) && node.parentElement.getAttribute(ROOT_ELEMENT_ATTR) === ROOT_ELEMENT_ID) {
-        return NodeFilter.FILTER_SKIP; // Skip nodes inside our own highlighter
-      }
-      return NodeFilter.FILTER_ACCEPT; // Accept all other text nodes
+      if (!containerRef.current) return NodeFilter.FILTER_SKIP;
+
+      return isInMyScope(containerRef.current, node, ROOT_ELEMENT_SELECTOR)
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_SKIP;
     }
   }
 
@@ -65,13 +71,13 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
   }, []);
 
   const highlightTextInElement = useCallback((element: HTMLElement) => {
-    const { words, highlightStyle, caseSensitive, isWordBoundary } = propsRef.current;
+    const { words, highlightStyle, caseSensitive, isWordBoundary, escapeRegex } = propsRef.current;
     const wordsArray = Array.isArray(words) ? words : [words];
 
     isDebug && console.log('Highlighting with words:', wordsArray);
 
     // Remove existing highlights
-    const existingMarks = element.querySelectorAll(MARKS_IN_SCOPE_SELECTOR);
+    const existingMarks = element.querySelectorAll(TextHighlighter.MARKS_IN_SCOPE_SELECTOR);
     existingMarks.forEach(mark => {
       const textContent = mark.textContent || '';
       const textNode = document.createTextNode(textContent);
@@ -102,7 +108,7 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
 
     textNodes.forEach(textNode => {
       const text = textNode.textContent || '';
-      if (!text.trim()) return;
+      if (!text) return;
 
       const pattern = wordsArray
       .filter(word => word)
@@ -110,7 +116,7 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
         if (word instanceof RegExp) {
           return word.source;
         }
-        let term = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        let term = escapeRegex ? word.replace(escapeRegex, '\\$&') : word;
         if (isWordBoundary) {
           term = `\\b${term}\\b`;
         }
@@ -136,8 +142,8 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
               return testRegex.test(part);
             }
             return caseSensitive
-              ? part === word.trim()
-              : part.toLowerCase() === word.trim().toLowerCase();
+              ? part === word
+              : part.toLowerCase() === word.toLowerCase();
           });
 
           if (shouldHighlight) {
@@ -211,7 +217,7 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
         observerRef.current.disconnect();
       }
     };
-  }, [words, highlightStyle, caseSensitive, isWordBoundary, highlightTextInElement, getTextSignature, ref]);
+  }, [words, highlightStyle, caseSensitive, isWordBoundary, highlightTextInElement, getTextSignature, ref, escapeRegex]);
 
   return (
     <div
@@ -232,7 +238,11 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
       {children}
     </div>
   );
-});
+}) as TextHighlighterComponent;
+
+TextHighlighter.MARK_SELECTOR = MARK_SELECTOR;
+TextHighlighter.ROOT_ELEMENT_SELECTOR = ROOT_ELEMENT_SELECTOR;
+TextHighlighter.MARKS_IN_SCOPE_SELECTOR = MARKS_IN_SCOPE_SELECTOR;
 
 export default TextHighlighter;
 

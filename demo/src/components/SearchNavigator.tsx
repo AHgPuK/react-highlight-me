@@ -1,10 +1,17 @@
 import React, { useState, useCallback } from 'react';
 
-import { MARKS_IN_SCOPE_SELECTOR, MARK_SELECTOR } from '../../../src/index';
+import TextHighlighter from '../../../src/index';
 
 const SearchNavigator = ({ containerRef, highlightStyle, searchTerm, dependencies = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<HTMLElement[]>([]);
+
+  const getMatches = useCallback((): HTMLElement[] => {
+    if (!containerRef.current) return [];
+
+    const marks = containerRef.current.querySelectorAll(TextHighlighter.MARKS_IN_SCOPE_SELECTOR);
+    return marks;
+  }, [containerRef, searchTerm, ...dependencies]);
 
   const findMatches = useCallback(() => {
     if (!containerRef.current) {
@@ -13,24 +20,31 @@ const SearchNavigator = ({ containerRef, highlightStyle, searchTerm, dependencie
       return;
     }
 
-    const foundMatches = containerRef.current.querySelectorAll(MARKS_IN_SCOPE_SELECTOR);
+    const foundMatches = getMatches();
 
     setMatches(foundMatches);
     setCurrentIndex(0);
+
   }, [containerRef, searchTerm, ...dependencies]);
 
   React.useEffect(() => {
     findMatches();
   }, [findMatches]);
 
-  const scrollToMatch = useCallback((index) => {
-    if (matches.length === 0) return;
-
-    // Reset all highlights
+  const highlightElements = useCallback((matches, index) => {
     matches.forEach((mark, i) => {
       mark.style.backgroundColor = i === index ? '#ff6b6b' : highlightStyle.backgroundColor;
       mark.style.boxShadow = i === index ? '0 0 8px rgba(255, 107, 107, 0.6)' : 'none';
     });
+  }, [searchTerm, containerRef, highlightStyle, ...dependencies]);
+
+  const scrollToMatch = useCallback((index: number) => {
+    // Highlight updates a content dynamically, so we need to get an updated list of DOM elements
+    const matches = getMatches();
+    if (matches.length === 0) return;
+
+    // Reset all highlights
+    highlightElements(matches, index);
 
     // Scroll to current match
     matches[index].scrollIntoView({
@@ -38,6 +52,7 @@ const SearchNavigator = ({ containerRef, highlightStyle, searchTerm, dependencie
       block: 'center',
       inline: 'nearest'
     });
+
   }, [matches, highlightStyle]);
 
   const goNext = () => {
@@ -54,11 +69,12 @@ const SearchNavigator = ({ containerRef, highlightStyle, searchTerm, dependencie
     scrollToMatch(prevIndex);
   };
 
-  // React.useEffect(() => {
-  //   if (matches.length > 0) {
-  //     scrollToMatch(currentIndex);
-  //   }
-  // }, [currentIndex, matches, scrollToMatch, searchTerm]);
+  React.useEffect(() => {
+    const matches = getMatches();
+    if (matches.length > 0) {
+      highlightElements(matches, currentIndex);
+    }
+  }, [currentIndex, matches, scrollToMatch, searchTerm]);
 
   return (
     <div style={{
