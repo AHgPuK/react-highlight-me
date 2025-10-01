@@ -232,7 +232,8 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
       }}
       style={{
         visibility: isInitiallyReady ? 'visible' : 'hidden',
-        minHeight: isInitiallyReady ? 'auto' : '1em'
+        minHeight: isInitiallyReady ? 'auto' : '1em',
+        display: 'contents',
       }}
     >
       {children}

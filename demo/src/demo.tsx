@@ -426,7 +426,7 @@ const Demo = () => {
             marginTop: '24px',
             border: '1px solid #e9ecef'
           }}>
-            <h3 style={{ color: '#495057', marginBottom: '12px' }}>🚀 How to Use</h3>
+            <h3 style={{ color: '#495057', marginBottom: '12px' }}>🚀 How to Use this Demo</h3>
             <ul style={{ color: '#6c757d', lineHeight: '1.6', paddingLeft: '20px' }}>
               <li><strong>Words:</strong> Enter comma-separated words or regex patterns (e.g., /\d+/ for numbers)</li>
               <li><strong>Search:</strong> Use the search box to find and navigate through specific terms</li>
