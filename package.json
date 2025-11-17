@@ -1,6 +1,6 @@
 {
   "name": "react-highlight-me",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Highlight words in React components or text",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
