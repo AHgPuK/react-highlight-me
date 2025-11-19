@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 const InteractiveDemo = () => {
   const [count, setCount] = useState(0);
   const [items, setItems] = useState(['Apple', 'Banana', 'Cherry']);
   const [newItem, setNewItem] = useState('');
+
+  const addItem = useCallback(() => {
+    if (newItem.trim()) {
+      setItems([...items, newItem.trim()]);
+      setNewItem('');
+    }
+  }, [items, newItem]);
 
   return (
     <div style={{
@@ -70,6 +77,7 @@ const InteractiveDemo = () => {
           <input
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && addItem()}
             placeholder="Add new item..."
             style={{
               background: 'rgba(255,255,255,0.1)',
@@ -81,12 +89,7 @@ const InteractiveDemo = () => {
             }}
           />
           <button
-            onClick={() => {
-              if (newItem.trim()) {
-                setItems([...items, newItem.trim()]);
-                setNewItem('');
-              }
-            }}
+            onClick={addItem}
             style={{
               background: 'rgba(255,255,255,0.2)',
               border: '1px solid rgba(255,255,255,0.3)',

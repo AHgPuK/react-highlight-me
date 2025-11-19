@@ -80,13 +80,17 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
 
     // Remove existing highlights
     const existingMarks = element.querySelectorAll(TextHighlighter.MARKS_IN_SCOPE_SELECTOR);
+    const elementsToNormalize = new Set<Node>();
     existingMarks.forEach(mark => {
       const textContent = mark.textContent || '';
       const textNode = document.createTextNode(textContent);
-      mark.parentNode?.replaceChild(textNode, mark);
+      if (mark.parentNode) {
+        elementsToNormalize.add(mark.parentNode);
+        mark.parentNode?.replaceChild(textNode, mark);
+      }
     });
 
-    element.normalize(); // Ensure text nodes are merged
+    elementsToNormalize.forEach(node => node.normalize());
 
     if (!wordsArray.length || wordsArray.every(word => !word)) {
       lastHighlightSignature.current = getTextSignature(element);
