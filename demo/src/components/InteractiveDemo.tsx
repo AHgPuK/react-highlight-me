@@ -13,7 +13,11 @@ const InteractiveDemo = () => {
   }, [items, newItem]);
 
   return (
-    <div style={{
+    // Here key prop is required to force re-render when count changes
+    // TextHighlighter changes the DOM structure dynamically, it would break reconciliation in DOM, so we need to force re-render
+    <div
+      key={count}
+      style={{
       background: 'linear-gradient(45deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
       padding: '20px',
