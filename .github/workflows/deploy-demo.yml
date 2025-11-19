@@ -39,6 +39,11 @@ jobs:
       - name: Build library
         run: pnpm run build
 
+      - name: Install demo dependencies
+        run: |
+          cd demo
+          pnpm install --frozen-lockfile
+
       - name: Build demo
         run: |
           cd demo
