@@ -1,7 +1,8 @@
 {
-  "name": "my-app",
+  "name": "react-highlight-me-demo",
   "private": true,
-  "version": "0.0.0",
+  "homepage": "https://AHgPuK.github.io/react-highlight-me",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

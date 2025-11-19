@@ -28,7 +28,11 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "pack:check": "npm pack && tar -tzf *.tgz && rm *.tgz",
+    "demo:dev": "cd demo && pnpm run dev",
+    "demo:build": "pnpm run build && cd demo && pnpm run build",
+    "demo:preview": "cd demo && pnpm run preview"
   },
   "keywords": [],
   "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com",
