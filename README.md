@@ -271,4 +271,4 @@ Feel free to submit issues, feature requests, or pull requests to improve the co
 
 ## License
 
-MIT License - feel free to use in your projects!
+ISC License - see [LICENSE](LICENSE) file for details.
