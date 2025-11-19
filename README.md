@@ -20,6 +20,9 @@ A flexible React component for highlighting specific words or phrases within tex
 
 *) pnpm is a preferable package manager for me at the moment.
 
+## [Demo](https://ahgpuk.github.io/react-highlight-me/)
+
+
 ## Usage
 
 ### Basic Text Highlighting

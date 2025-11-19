@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useRef } from 'react';
 
 import TextHighlighter from '../../src/index';
 import AdvancedTypeScript from './components/AdvancedTypeScript';
@@ -30,7 +30,7 @@ const Demo = () => {
   const contentRef = useRef(null);
 
   // Parse words from input (handles strings and regex)
-  const parseWords = (input: string) => {
+  const parseWords = (input: string): (RegExp | string)[] => {
     if (!input.trim()) return [];
 
     return input.split(',').map((word: string) => {

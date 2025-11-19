@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useCallback, useState, forwardRef } from 'react';
+import React, { useLayoutEffect, useRef, useCallback, useState, forwardRef, useMemo } from 'react';
 
 type Props = {
   children?: React.ReactNode;
@@ -41,15 +41,17 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
   const propsRef = useRef(currentProps);
   propsRef.current = currentProps;
 
-  const nodeFilter = {
-    acceptNode: (node: Node) => {
-      if (!containerRef.current) return NodeFilter.FILTER_SKIP;
+  const nodeFilter = useMemo(() => {
+    return {
+      acceptNode: (node: Node) => {
+        if (!containerRef.current) return NodeFilter.FILTER_SKIP;
 
-      return isInMyScope(containerRef.current, node, ROOT_ELEMENT_SELECTOR)
-        ? NodeFilter.FILTER_ACCEPT
-        : NodeFilter.FILTER_SKIP;
+        return isInMyScope(containerRef.current, node, ROOT_ELEMENT_SELECTOR)
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP;
+      }
     }
-  }
+  }, [containerRef?.current]);
 
   const getTextSignature = useCallback((element: HTMLElement): string => {
     // Create a signature of all text content to detect real changes
@@ -68,7 +70,7 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
     }
 
     return textParts.join('|');
-  }, []);
+  }, [nodeFilter]);
 
   const highlightTextInElement = useCallback((element: HTMLElement) => {
     const { words, highlightStyle, caseSensitive, isWordBoundary, escapeRegex } = propsRef.current;
@@ -209,7 +211,8 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
     observerRef.current.observe(currentRef, {
       childList: true,
       subtree: true,
-      characterData: true
+      characterData: true,
+      attributes: true,
     });
 
     return () => {
