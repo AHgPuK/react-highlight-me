@@ -19,7 +19,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -33,7 +34,7 @@
   "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AHgPuK/react-highlight-me"
+    "url": "git+https://github.com/AHgPuK/react-highlight-me.git"
   },
   "license": "ISC",
   "packageManager": "pnpm@10.9.0",

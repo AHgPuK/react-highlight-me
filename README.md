@@ -14,11 +14,11 @@ A flexible React component for highlighting specific words or phrases within tex
 
 ## Installation
 
-| npm                              | yarn                          | pnpm                          |
+| npm                              | yarn                          | pnpm *                        |
 |----------------------------------|-------------------------------|-------------------------------|
 | `npm install react-highlight-me` | `yarn add react-highlight-me` | `pnpm add react-highlight-me` |
 
-
+*) pnpm is a preferable package manager for me at the moment.
 
 ## Usage
 
@@ -251,6 +251,19 @@ Works in all modern browsers that support:
 - React 16.8+
 - ES6 Regular Expressions
 - Array methods (map, filter, some)
+
+## Development & Debugging
+
+This package includes TypeScript source files for easier debugging and development:
+```typescript
+// For production (compiled):
+import { Highlighter } from 'react-highlight-me';
+
+// For debugging (source):
+import { Highlighter } from 'react-highlight-me/src';
+```
+
+Source maps are included to map compiled code back to TypeScript sources in your debugger.
 
 ## Contributing
 
