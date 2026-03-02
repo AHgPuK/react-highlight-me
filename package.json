@@ -35,7 +35,7 @@
     "demo:preview": "cd demo && pnpm run preview"
   },
   "keywords": [],
-  "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com",
+  "author": "Andrey Hohutkin <Andrey.Hohutkin@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AHgPuK/react-highlight-me.git"
