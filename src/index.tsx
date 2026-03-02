@@ -4,7 +4,7 @@ type Props = {
   children?: React.ReactNode;
   words?: string[] | string | RegExp | RegExp[];
   highlightStyle?: React.CSSProperties;
-  caseSensitive?: boolean;
+  caseSensitive?: boolean | undefined;
   isWordBoundary?: boolean;
   isDebug?: boolean;
   escapeRegex?: RegExp;
@@ -27,7 +27,7 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
   children,
   words = [],
   highlightStyle = { backgroundColor: 'yellow', fontWeight: 'bold' },
-  caseSensitive = false,
+  caseSensitive = undefined,
   isWordBoundary = false,
   isDebug = false,
   escapeRegex = /[.*+?^${}()|[\]\\]/g,
@@ -132,7 +132,7 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
 
       if (!pattern) return;
 
-      const regex = new RegExp(`(${pattern})`, caseSensitive ? 'g' : 'gi');
+      const regex = new RegExp(`(${pattern})`, !!caseSensitive ? 'g' : 'gi');
       const parts = text.split(regex);
 
       if (parts.length > 1) {
@@ -143,6 +143,9 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
 
           const shouldHighlight = wordsArray.some(word => {
             if (word instanceof RegExp) {
+              if (caseSensitive === undefined) {
+                return word.test(part);
+              }
               const flags = caseSensitive ? word.flags : [...new Set([...word.flags.split(''), 'i'])].join('');
               const testRegex = new RegExp(word.source, flags);
               return testRegex.test(part);

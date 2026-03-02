@@ -22,7 +22,7 @@ const Demo = () => {
     borderRadius: '3px',
     fontWeight: 'bold'
   });
-  const [caseSensitive, setCaseSensitive] = useState(false);
+  const [caseSensitive, setCaseSensitive] = useState<boolean | undefined>(undefined);
   const [isWordBoundary, setIsWordBoundary] = useState(false);
   const [isDebug, setIsDebug] = useState(false);
   const [activePreset, setActivePreset] = useState('default');
@@ -36,9 +36,10 @@ const Demo = () => {
     return input.split(',').map((word: string) => {
       const trimmed = word;
       // Check if it's a regex pattern
-      if (trimmed.startsWith('/') && trimmed.endsWith('/')) {
+      if (trimmed.match(/^\/.*?\/[gimsuy]*$/)) {
         try {
-          return new RegExp(trimmed.slice(1, -1), 'g');
+          const parts = trimmed.split('/');
+          return new RegExp(parts[1], 'g' + parts[2]);
         } catch {
           return trimmed;
         }
@@ -52,7 +53,7 @@ const Demo = () => {
   const presets = {
     default: {
       style: { backgroundColor: '#ffeb3b', color: '#000', padding: '2px 4px', borderRadius: '3px', fontWeight: 'bold' },
-      words: 'React, JavaScript, TypeScript'
+      words: 'React,JavaScript,TypeScript'
     },
     error: {
       style: {
@@ -266,7 +267,9 @@ const Demo = () => {
                 <input
                   type="checkbox"
                   checked={caseSensitive}
-                  onChange={(e) => setCaseSensitive(e.target.checked)}
+                  onChange={(e) => {
+                    setCaseSensitive(e.target.checked);
+                  }}
                   style={{ transform: 'scale(1.2)' }}
                 />
                 <span style={{ fontWeight: 'bold', color: '#495057' }}>Case Sensitive</span>
