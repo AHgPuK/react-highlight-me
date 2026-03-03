@@ -116,53 +116,83 @@ const TextHighlighter = forwardRef<HTMLDivElement, Props>(({
       const text = textNode.textContent || '';
       if (!text) return;
 
-      const pattern = wordsArray
-      .filter(word => word)
-      .map(word => {
-        if (word instanceof RegExp) {
-          return word.source;
+      const regexes: RegExp[] = [];
+
+      const stringTerms = wordsArray
+        .filter((word): word is string => typeof word === 'string' && word !== '')
+        .map(word => {
+          let term = escapeRegex ? word.replace(escapeRegex, '\\$&') : word;
+          if (isWordBoundary) {
+            term = `\\b${term}\\b`;
+          }
+          return term;
+        });
+
+      if (stringTerms.length > 0) {
+        regexes.push(new RegExp(stringTerms.join('|'), !!caseSensitive ? 'g' : 'gi'));
+      }
+
+      wordsArray
+        .filter((word): word is RegExp => word instanceof RegExp)
+        .forEach(word => {
+          const flags = word.flags.includes('g') ? word.flags : word.flags + 'g';
+          regexes.push(new RegExp(word.source, flags));
+        });
+
+      if (regexes.length === 0) return;
+
+      const ranges: { start: number; end: number }[] = [];
+      for (const regex of regexes) {
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          if (match[0].length === 0) {
+            regex.lastIndex++;
+            continue;
+          }
+          ranges.push({ start: match.index, end: match.index + match[0].length });
         }
-        let term = escapeRegex ? word.replace(escapeRegex, '\\$&') : word;
-        if (isWordBoundary) {
-          term = `\\b${term}\\b`;
+      }
+
+      if (ranges.length === 0) return;
+
+      ranges.sort((a, b) => a.start - b.start || b.end - a.end);
+      const merged: { start: number; end: number }[] = [ranges[0]];
+      for (let i = 1; i < ranges.length; i++) {
+        const prev = merged[merged.length - 1];
+        if (ranges[i].start <= prev.end) {
+          prev.end = Math.max(prev.end, ranges[i].end);
+        } else {
+          merged.push(ranges[i]);
         }
-        return term;
-      })
-      .join('|');
+      }
 
-      if (!pattern) return;
+      const parts: { text: string; isMatch: boolean }[] = [];
+      let lastIndex = 0;
+      for (const { start, end } of merged) {
+        if (start > lastIndex) {
+          parts.push({ text: text.slice(lastIndex, start), isMatch: false });
+        }
+        parts.push({ text: text.slice(start, end), isMatch: true });
+        lastIndex = end;
+      }
+      if (lastIndex < text.length) {
+        parts.push({ text: text.slice(lastIndex), isMatch: false });
+      }
 
-      const regex = new RegExp(`(${pattern})`, !!caseSensitive ? 'g' : 'gi');
-      const parts = text.split(regex);
-
-      if (parts.length > 1) {
+      if (parts.some(p => p.isMatch)) {
         const fragment = document.createDocumentFragment();
 
-        parts.forEach(part => {
-          if (!part) return;
+        parts.forEach(({ text: partText, isMatch }) => {
+          if (!partText) return;
 
-          const shouldHighlight = wordsArray.some(word => {
-            if (word instanceof RegExp) {
-              if (caseSensitive === undefined) {
-                return word.test(part);
-              }
-              const flags = caseSensitive ? word.flags : [...new Set([...word.flags.split(''), 'i'])].join('');
-              const testRegex = new RegExp(word.source, flags);
-              return testRegex.test(part);
-            }
-            return caseSensitive
-              ? part === word
-              : part.toLowerCase() === word.toLowerCase();
-          });
-
-          if (shouldHighlight) {
+          if (isMatch) {
             const mark = document.createElement('mark');
             mark.setAttribute(MARK_ATTRIBUTE, 'true');
             Object.assign(mark.style, highlightStyle);
-            mark.textContent = part;
+            mark.textContent = partText;
             fragment.appendChild(mark);
           } else {
-            fragment.appendChild(document.createTextNode(part));
+            fragment.appendChild(document.createTextNode(partText));
           }
         });
 
